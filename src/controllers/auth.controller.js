@@ -29,8 +29,8 @@ const signJwtToken = (id) => {
 const protect = catchAsync(async (req, res, next) => {
     let token;
 
-    if (req.headers.authorization && req.headers.authorization.startWith("Bearer")) {
-        token = req.header.authorization.split(" ")[1];
+    if (req.headers.authorization && req.headers.authorization.startsWith("Bearer")) {
+        token = req.headers.authorization.split(" ")[1];
     }
     if (!token) {
         return next(new ApplicationError("You are not logged  in.", httpStatus.UNAUTHORIZED));
@@ -58,6 +58,8 @@ const restrictTo = (...roles) => {
         {
             return next(new ApplicationError("You are not authorized to perform this action", httpStatus.FORBIDDEN));
         }
+
+        next();
     }
 }
 
@@ -98,18 +100,37 @@ const login = catchAsync(async (req, res, next) => {
 
     const token = signJwtToken(user._id);
 
-    const userLoginActivity = await UserActivity.create({
-        userId: user._id,
-        email: user.email,
-        datetime: Date.now(),
-        activity: 'login',
-        location: req.body.location,
-    });
-
     return res.status(200).json({
         user: user,
         token: token
     });
 });
 
-module.exports = {signup, protect, restrictTo, login};
+const updatePassword = catchAsync(async (req,res,next) => {
+
+    const currentPassword = req.body.currentPassword;
+    const password = req.body.password;
+    const confirmPassword = req.body.confirmPassword;
+
+    console.log(password, confirmPassword);
+
+    const user = await Users.findById(req.user.id).select("+password");     //to get the password field from User model which is not available in find() since we changed the select value to false;
+
+    if(!(await user.correctPassword(currentPassword, user["password"])))
+    {
+        return next(new ApplicationError("Your password is incorrect", httpStatus.BAD_REQUEST));
+    }
+
+    user["password"] = password;
+    user["confirmPassword"] = confirmPassword;
+
+    await user.save();
+
+    console.log("User Password Updated");
+
+    const token = signJwtToken(user._id);
+    return res.status(httpStatus.OK).json({"status": "success", message: "Your Password has been Updated", token: token});
+
+});
+
+module.exports = {signup, protect, restrictTo, login, updatePassword};

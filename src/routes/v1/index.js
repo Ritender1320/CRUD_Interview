@@ -1,7 +1,7 @@
 const express = require("express");
 
 const authRoute = require("./auth.routes");
-//const userRoute = require("./users.route");
+const userRoute = require("./user.routes");
 
 const productRoute = require("./product.routes");
 
@@ -11,7 +11,7 @@ const router = express.Router();
 const defaultRoutes = [
     { path: "/products", route: productRoute },
     { path: "/auth", route: authRoute },
-    // { path: "/users", route: userRoute },
+    { path: "/users", route: userRoute },
 ]
 
 

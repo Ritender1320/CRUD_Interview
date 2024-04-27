@@ -8,7 +8,8 @@ const { productsController , authController } = require("../../controllers");
 const {protect, restrictTo} = authController;
 
 router
-    .route("/list")
+    .route("/")
+    .post(protect, restrictTo("Super Admin"), productsController.createProduct)
     .get(protect, restrictTo("Super Admin","User"), productsController.listProducts);
 
 router

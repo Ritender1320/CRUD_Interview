@@ -6,12 +6,18 @@ const getProduct = async (id, next) => {
 
 }
 
-const listProducts = async ( user, next) => {
-    const products = await Products.find({}, { productName: 1, current:1, createdAt:1});
+const listProducts = async (next) => {
+    const products = await Products.find({});
     return products;
 
 }
 
+const createProduct = async (requestBody, next) => {
+
+    const product = await Products.create(requestBody);
+    return product;
+
+};
 
 const updateProduct = async (productId, requestBody, next) => {
 
@@ -28,4 +34,4 @@ const deleteProduct = async (productId, next) => {
 };
 
 
-module.exports = { getProduct, listProducts, updateProduct, deleteProduct }
+module.exports = { getProduct, listProducts, updateProduct, deleteProduct, createProduct }

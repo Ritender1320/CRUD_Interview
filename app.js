@@ -18,9 +18,9 @@ const port = process.env.PORT || 3000;
 
 const app = express();
 
-mongoose.connect(mongoDb.mongoDBUri, mongoDb.mongoDBOptions, () => {
-    console.log("Connected to MongoDB 📌...");
-});
+// mongoose.connect(mongoDb.mongoDBUri, mongoDb.mongoDBOptions, () => {
+//     console.log("Connected to MongoDB 📌...");
+// });
 
 app.use(express.urlencoded({extended: true}));
 
@@ -39,4 +39,29 @@ app.get("/", (_req, res)=>{
     });
 });
 
-app.listen(port, () => console.log(`Server running on port ${port}`));
+// app.listen(port, () => console.log(`Server running on port ${port}`));
+
+const startDB = async () => {
+
+    if (!mongoDb.mongoDbUri) {
+        throw new Error('mongoDB.mongoDBUri, must be defined');
+    }
+    try {
+        console.log(mongoDb);
+        await mongoose.connect(mongoDb.mongoDbUri, mongoDb.mongoDbOptions);
+        console.log("Connected to MongoDB 📌...");
+
+    } catch (err) {
+        // throw new DbConnectionError();
+        console.log(err);
+    }
+
+
+};
+
+startDB()
+.then(() => {
+    app.listen(port, () => {
+        console.log(`Server running on port ${port} 🔥`);
+    });
+})

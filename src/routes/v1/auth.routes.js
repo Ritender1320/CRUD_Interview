@@ -16,5 +16,8 @@ router
     .route("/login")
     .post(authController.login);
 
-
+router
+    .route("/updatePassword")
+    .post(protect, restrictTo("Super Admin", "User"), authController.updatePassword);
+    
 module.exports = router;

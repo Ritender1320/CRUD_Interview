@@ -10,7 +10,7 @@ module.exports = {
         mongoDbUri: process.env.MONGO_HOST + "/" + process.env.MONGO_DB_NAME,
         mongoDbOptions: {
             useNewUrlParser: true,
-            userUnifiedTopology: true,
+            useUnifiedTopology: true,
         }
     },
 
