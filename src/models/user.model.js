@@ -37,11 +37,7 @@ const userSchema = new mongoose.Schema(
         },
         role: {
             type: String,
-            enum: ["Super Admin", "Admin", "User"],
-            required: true,
-        },
-        organizationId: {
-            type: mongoose.Types.ObjectId,
+            enum: ["Super Admin", "User"],
             required: true,
         },
         passwordChangedAt: {

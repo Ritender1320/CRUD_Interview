@@ -61,26 +61,6 @@ const restrictTo = (...roles) => {
     }
 }
 
-const generateAccessToken = (userLogin) => {
-    return jwt.sign({
-        id: id,
-    },
-        jwtConfig.superSecertKey,
-        {
-            expiresIn: jwtConfig.expiresIn,
-        })
-};
-
-const generateRefershToken = (userLogin) => {
-    return jwt.sign({
-        id: id,
-    },
-        jwtConfig.superSecertKey,
-        {
-            expiresIn: jwtConfig.expiresIn,
-        })
-};
-
 const signup = catchAsync(async (req, res, next) => {
     let user = await Users.findOne({email: req.body.email});
     if(user)

@@ -18,7 +18,7 @@ const port = process.env.PORT || 3000;
 
 const app = express();
 
-mongoose.connect(mongoDB.mongoDBUri, mongoDB.mongoDBOptions, () => {
+mongoose.connect(mongoDb.mongoDBUri, mongoDb.mongoDBOptions, () => {
     console.log("Connected to MongoDB 📌...");
 });
 
@@ -30,13 +30,13 @@ app.use(cors());
 
 app.use(errorMiddleware);
 
+app.use("/v1", routes);
+
 app.get("/", (_req, res)=>{
     return res.json({
-        title: "ISM Backend API Service",
-        version: `v${packageJson.version}`,
-        author: `${packageJson.author}`,
-        documentation: "/v1/docs",
+        title: "Backend API Service",
+        author: `Ritender`
     });
 });
 
-app.listen(port, () => console.log(`Server running on port ${prot}`));
+app.listen(port, () => console.log(`Server running on port ${port}`));
