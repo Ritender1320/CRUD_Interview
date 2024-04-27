@@ -13,6 +13,7 @@ const host_url = process.env.HOST_URL;
 
 const { Users } = require("../models");
 const userModel = require("../models/user.model");
+const { sign } = require("crypto");
 
 const signJwtToken = (id) => {
     return jwt.sign({
@@ -49,7 +50,16 @@ const protect = catchAsync(async (req, res, next) => {
     req.user = currentUser;
 
     next();
-})
+});
+
+const restrictTo = (...roles) => {
+    return (req, res, next) => {
+        if(!roles.includes(req.user.role))
+        {
+            return next(new ApplicationError("You are not authorized to perform this action", httpStatus.FORBIDDEN));
+        }
+    }
+}
 
 const generateAccessToken = (userLogin) => {
     return jwt.sign({
@@ -98,6 +108,28 @@ const login = catchAsync(async (req, res, next) => {
     if(!user)
     {
         console.log("User not found");
-        return next(new ApplicationError("Invalid Credentials"))
+        return next(new ApplicationError("Invalid Credentials, please try again", httpStatus.BAD_REQUEST));
     }
-})
+
+    if(user.status === "inactive")
+    {
+        return next(new ApplicationError("The User has been deactivated, Kindly contact the organization Admin", httpStatus.UNAUTHORIZED));
+    }
+
+    const token = signJwtToken(user._id);
+
+    const userLoginActivity = await UserActivity.create({
+        userId: user._id,
+        email: user.email,
+        datetime: Date.now(),
+        activity: 'login',
+        location: req.body.location,
+    });
+
+    return res.status(200).json({
+        user: user,
+        token: token
+    });
+});
+
+module.exports = {signup, protect, restrictTo, login};
